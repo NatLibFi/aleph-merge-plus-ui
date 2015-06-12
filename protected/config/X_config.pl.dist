@@ -1,0 +1,8 @@
+# Settings
+return
+{
+  'x-server' => 'http://tester5-kktest.lib.helsinki.fi:8080/X',
+  'scratch_dir' => '/tmp',
+  'session_duration' => 600,
+  'user_library' => 'usr00'
+}

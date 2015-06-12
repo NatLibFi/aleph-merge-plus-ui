@@ -1,0 +1,20 @@
+/*jshint sub:true*/
+
+define(function() {
+    
+    var config = {
+        //X_SERVER: "http://localhost/merge_uusi/trunk/merge_backend_stub/x_stub.pl",
+        X_SERVER: "http://localhost/libtestX",
+        MERGEAPI: "http://localhost/merge_uusi/trunk/merge_ws/merge.pl",
+        //UILOGGER: "http://localhost/merge_uusi/trunk/merge_ui/uilogger.pl?line=",
+     
+        //Double DB API
+        DDB: "http://localhost/merge_uusi/trunk/merge_backend_stub/X_stub.pl"
+     
+    };
+
+    config['XAPI'] = config['X_SERVER'] + "?op=find-doc&base=fin01&show_sub6=Y&doc_num=";
+    config['XPOSTAPI'] = config['X_SERVER'];
+    
+    return config;
+});

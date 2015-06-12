@@ -1,0 +1,59 @@
+<html>
+<head>
+
+<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.8.5.custom.css" TYPE="text/css" MEDIA=screen>
+
+<script type="text/javascript" src="jquery-1.4.2.js"></script>
+<script type="text/javascript" src="jquery-ui-1.8.5.custom.min.js"></script>
+<script type="text/javascript" src="WorkingDialog.js"></script>
+
+<script type="text/javascript">
+
+
+$(document).ready(function() {
+
+
+  var job1 = WorkingDialog.addJob('Job1');
+  var job2 = WorkingDialog.addJob('Job2');
+  
+  WorkingDialog.show();
+  
+  job1.start();
+ 
+  setTimeout(function() {
+    job2.start();
+  },1000);
+  
+  setTimeout(function() {
+  
+  
+    job2.end();
+  },1500);
+  
+  setTimeout(function() {
+    job1.end();
+  },2500);
+  
+  setTimeout(function() {
+    WorkingDialog.clear();
+    var job3 = WorkingDialog.addJob('Job3');
+    job3.start();
+    WorkingDialog.show();
+    
+    setTimeout(function() {
+      job3.fail();
+    },1500);
+  },4000);
+  
+
+});
+
+
+</script>
+</head>
+<body>
+
+<div id="WorkingDialog"></div>
+
+</body>
+</html>
