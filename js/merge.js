@@ -38,8 +38,11 @@ require([
     if (
      config.XAPI === undefined ||
      config.XPOSTAPI === undefined ||
-     config.MERGEAPI === undefined ) {
-        alert("Configuration parameters missing.");
+     config.MERGEAPI === undefined ||
+     config.XCHILDAPI === undefined
+    ) {
+      alert("Configuration parameters missing.");
+
     }
 
     if (config.UILOGGER === undefined) {
@@ -66,6 +69,7 @@ require([
         
         DoubleDatabase.bindTo(messageBus);
 
+
         log("");
         $.get("viesti.txt", function(data) { 
             log(data, false);
@@ -73,8 +77,9 @@ require([
       
         WorkingDialog.autoclosedelay = 1000;
         $('#WorkingDialog').dialog({ 
-            beforeClose: function(event, ui) { 
-                updateRecordsAfterMerge();
+            beforeClose: function(event, ui) {
+                /* Here is the problem - this shouldn't happen after merge-chk */ 
+                    updateRecordsAfterMerge();
             }
         });
         WorkingDialog.hide();
@@ -95,6 +100,8 @@ require([
           }
         });
 
+        
+
       $('.records').find("[name=sourceID]").change(function(e) {
 
             jQuery.removeData(storage);
@@ -111,6 +118,7 @@ require([
         
         });
         
+
         $('.records').find("[name=targetID]").change(function(e) {
         
             jQuery.removeData(storage);
@@ -127,34 +135,55 @@ require([
         });
         
         $('#transpose').click(transposeRecords);
-        $('#merge').click(mergeRecords);
+        $('#merge').click(validateRecords(mergeRecords));
         $('#save').click(saveRecord);
         $('#merge-chk').click(mergeCheck);
         
+        $('#clearAll').click(clearAll);
+
         $('#logout').click(function() {
             window.location = "index.pl?action=logout";
         });
         
         messageBus.addHashListener(function(obj, from, to) {
             if (obj === undefined) {
-                return;
+              return;
             }
-           
             var updates = [];
-           
             if (obj.s !== undefined) $('.records').find("[name=sourceID]").val(obj.s);
             if (obj.t !== undefined) $('.records').find("[name=targetID]").val(obj.t);
             if (obj.s !== undefined) updates.push( updateSourceRecord(obj.s) );
             if (obj.t !== undefined) updates.push( updateTargetRecord(obj.t) );
-            
-            
-            if (updates.length > 0) {
-                $.when.apply($, updates).done(updateMergeProposal);
-            }
-         
+           
+           if (updates.length > 0) {
+               $.when.apply($, updates).done(updateMergeProposal);
+           }
         });
       
     });
+    
+    
+    function validateRecords(doneCallback) {
+
+        return function(){
+
+        var src = $('.records').find("[name=sourceID]").val();
+        var tgt = $('.records').find("[name=targetID]").val();
+
+        var errorHandler = function(errorText) {
+              warn("cannot merge: "+ errorText );
+              $('#merged .data').html(errorText);
+           }
+
+        $.when(notHostRecord(src), notHostRecord(tgt))
+          .done(doneCallback)
+          .fail(errorHandler);
+
+        }
+
+   }
+    
+    
     
     
     function transposeRecords() {
@@ -163,12 +192,26 @@ require([
         var id = $.data(storage, 'tupla_id');
         
         var new_src = $('.records').find("[name=targetID]").val();
-        var new_tgt =	$('.records').find("[name=sourceID]").val();
+        var new_tgt = $('.records').find("[name=sourceID]").val();
         $('.records').find("[name=targetID]").val(new_tgt);
         $('.records').find("[name=sourceID]").val(new_src);
-    
-        $.when( updateSourceRecord(new_src), updateTargetRecord(new_tgt) )
-            .done(updateMergeProposal);
+        sourceRecord=undefined;
+        targetRecord=undefined;
+        mergedRecord=undefined;
+        
+        var errorHandler = function(errorText) {
+              warn("(Transpose) cannot merge: "+ errorText );
+              $('#merged .data').html(errorText);
+        }
+
+        var opts = {
+            noValidate: false,
+            updateProposal: false
+        };
+  
+        $.when(updateSourceRecord(new_src, opts), updateTargetRecord(new_tgt, opts))
+               .done(updateMergeProposal)
+               .fail(errorHandler);
         
         //Set the id again, since changing the records will clear it.
         if (id !== undefined) {
@@ -180,10 +223,17 @@ require([
     
     function mergeCheck() {
       
-            var src = $('.records').find("[name=sourceID]").val();
+    // TODO: This breaks merged record! Needs fixing!
+    // See: UpdateRecordsAfterMerge
+
+    warn("Check functionality not in use.");
+    return;
+    
+           var src = $('.records').find("[name=sourceID]").val();
             var tgt = $('.records').find("[name=targetID]").val();
 
         var docnum = $(mergedRecord).find("fixfield[id='001']").text();
+        
         WorkingDialog.clear();
         WorkingDialog.show({width: "700px"});
         var checkJob = WorkingDialog.addJob("Tarkistetaan yhdistettyä tietuetta " + docnum);
@@ -231,7 +281,7 @@ require([
     
     
     function mergeRecords() {
-
+       
         if (!Utils.validateRecord(sourceRecord)) { 
           warn("cannot merge.");
           return;
@@ -283,7 +333,7 @@ require([
                     //X-api gives the success message in error tag (don't try this at home).
                     var ok = false;
                     $errors.each(function(i) {
-                        if ( /^Document: \d* was updated successfully\.$/.test( $(this).text() )) {
+                        if ( /^\[0018\] Document: \d* was updated successfully\.$/.test( $(this).text() )) {
                             ok = true;
                         }
                     });
@@ -321,7 +371,7 @@ require([
       
         var sdocnum = $(sourceRecord).find("fixfield[id='001']").text();
         var deleteJob = WorkingDialog.addJob('Poistetaan tietue ' + sdocnum);
-        
+
         $(sourceRecord).find('[id=STA]').each(function() {
           if ($(this).text() == "DELETED") {
             $(this).remove();
@@ -371,7 +421,7 @@ require([
                     //X-api gives the success message in error tag (don't try this at home).
                     var ok = false;
                     $errors.each(function(i) {
-                        if ( /^Document: \d* was updated successfully\.$/.test( $(this).text() )) {
+                        if ( /^\[0018\] Document: \d* was updated successfully\.$/.test( $(this).text() )) {
                             ok = true;
                         }
                     });
@@ -426,6 +476,7 @@ require([
      *  
      * Saves the merged record to database without trying to delete the sourcerecord.
      **/
+
     function saveRecord() {
       
             if (mergedRecord === undefined) {
@@ -438,6 +489,7 @@ require([
             WorkingDialog.show({width: "700px"});
             
             var saveJob = WorkingDialog.addJob('Tallennetaan tietue ' + docnum);
+
             $.ajax({
               'url': config.XPOSTAPI, 
               'type': 'POST',
@@ -467,7 +519,7 @@ require([
                         //X-api gives the success message in error tag (don't try this at home).
                         var ok = false;
                         $errors.each(function(i) {
-                            if ( /^Document: \d* was updated successfully\.$/.test( $(this).text() )) {
+                            if ( /^\[0018\] Document: \d* was updated successfully\.$/.test( $(this).text() )) {
                                 ok = true;
                             }
                         });
@@ -516,10 +568,11 @@ require([
             updateTargetRecord(tgt_id, opts);
             updateMergedRecord(tgt_id, opts);
         }
-        
-    }
+      
+        $("#save").show();
 
-    /**
+    }
+   /**
      * Renders a record into element pointed by viewSelector (jquery selector)
      * 
      */
@@ -540,9 +593,9 @@ require([
 
     function redrawSourceRecord() {
         renderRecord('#source .data', sourceRecord);
-        messageBus.notifySourceRedraw(sourceRecord, mergedRecord);
-        
+        messageBus.notifySourceRedraw(sourceRecord, mergedRecord);      
     }
+
 
     function clearAll() {
         $('.records').find("[name=sourceID]").val('');
@@ -550,9 +603,15 @@ require([
         $('#source .data').html('');
         $('#target .data').html('');
         $('#merged .data').html('');
+        sourceRecord = undefined;
+        targetRecord = undefined;
+        mergedRecord = undefined;
+        log("");
+        log("Cleared all.");
     }
 
     function updateTargetRecord(rec_key, options) {
+       /* var deferred=$.Deferred(); */
         options = options || {};
         targetRecord=undefined;
         
@@ -576,17 +635,19 @@ require([
             .fail(textErrorHandler('#target .data'));
         
     }
+  
 
     function updateSourceRecord(rec_key, options) {
         options = options || {};
-
-        sourceRecord = undefined;
+        
+        sourceRecord=undefined;
         
         if (rec_key === undefined || rec_key === null || rec_key === "") {
             return;
         }
         
         $('#source .data').html("");
+
         return loadRecord( rec_key )
             .done(function(record) {
                 
@@ -605,6 +666,7 @@ require([
             .fail(textErrorHandler('#source .data'));
         
     }
+
     /**
      * Update merged record view with rec_key from database.
      * Useful after merge to reload the merged record from db 
@@ -612,6 +674,7 @@ require([
      * 
      */
     function updateMergedRecord(rec_key, options) {
+     
         mergedRecord=undefined;
         
         if (rec_key === undefined || rec_key === null || rec_key === "") {
@@ -620,7 +683,7 @@ require([
         
         $('#merged .data').html("");
         
-        loadRecord( rec_key )
+       loadRecord( rec_key )
             .done(function(record) {
                 mergedRecord = record;
                 redrawMergedRecord( mergedRecord );
@@ -634,8 +697,8 @@ require([
             .fail(textErrorHandler('#merged .data'));
             
     }
-    
-    
+
+
     /**
      * Returns a function that:
      *  writes error string into element pointed by selector (jquery)
@@ -643,17 +706,17 @@ require([
      * 
      */
     function textErrorHandler(selector) {
-        
+
         return function(errorText) {
             if (selector !== undefined) {
                 $(selector).html( errorText );
             }
-            warn(errorText);
+       warn(errorText);
         }
         
     }
     
-    
+
     /**
      * 
      * Loads a record from X-server, returns a promise of said record.
@@ -661,9 +724,9 @@ require([
      */
     function loadRecord(rec_key) {
         var deferred = $.Deferred();
-        
+
         $.get(config.XAPI + rec_key, function(oai_marcxml_rec, textStatus, xhr) {
-           
+
             var error = $(oai_marcxml_rec).find('error');
             if (error.length) {
                 
@@ -687,15 +750,39 @@ require([
      * 
      */
     function updateMergeProposal() {
-   
+        
+        $("#save").hide();
 
-      mergedRecord=undefined;
+        mergedRecord=undefined;
+        $('#merged .data').html("");
+
+        if (sourceRecord === undefined || targetRecord === undefined) {
+          // warn("Errors: cannot merge.");
+          return;
+        }
+
+        if (!Utils.validateRecord(sourceRecord)) {
+          var errorText="Cannot merge: source record is deleted";
+          warn(errorText);
+          $('#merged .data').html(errorText);   
+          return;
+        }
+        if (!Utils.validateRecord(targetRecord)) {
+          var errorText="Cannot merge: target record is deleted";
+          warn(errorText);
+          $('#merged .data').html(errorText);   
+          return;
+        }
+
+      validateRecords(queryMergedRecord)();
+ 
+      function queryMergedRecord() {
+
       $('#merged .data').html("");
         
-        
         if (typeof(sourceRecord) != "undefined" &&
-            typeof(targetRecord) != "undefined") {
-          
+          typeof(targetRecord) != "undefined") {
+
         
         $.ajax({
           'url': config.MERGEAPI, 
@@ -713,6 +800,7 @@ require([
             mergedRecord = oai_marcxml_rec;
             
             redrawMergedRecord( mergedRecord );
+           /* redrawMergedRecord(); */
             
             
             /* Disabled for now, until configuration is possible 
@@ -731,8 +819,34 @@ require([
         
       
       }
-
+      }
     }
+
+    /**
+     *  Checks whether given record has child/component records 
+     * 
+     */
+     
+    function notHostRecord(rec_key) {
+       
+      var deferred = $.Deferred();
+ 
+      $.get(config.XCHILDAPI + rec_key, function(child_query_response) {
+    
+        var error = $(child_query_response).find('error');
+        if (error.text() === "empty set") {
+              log(rec_key + "'s children: " + error.text());
+              deferred.resolve();
+        }
+    else {
+              var child_no = $(child_query_response).find('no_records');
+              deferred.reject(rec_key + " is host record! ("+child_no.text()+" children)");
+        }
+    });
+    
+        return deferred.promise();  
+}
+
 
 
     function loaderHTML() {

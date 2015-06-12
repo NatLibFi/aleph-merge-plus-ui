@@ -64,24 +64,26 @@ define(function() {
               if (index===0) {
                 stringRepresentation += "<span class='sub'><span class='submarker'>‡</span><span class='subcode'>"+$(this).attr('label') +"</span><span class='subvalue'>"+ $(this).text() +"</span></span>\n";
               } else {
-                stringRepresentation += "       " + "<span class='sub'><span class='submarker'>‡</span><span class='subcode'>"+$(this).attr('label') +"</span><span class='subvalue'>"+ $(this).text() +"</span></span>\n";
+                stringRepresentation += "       " + "<span class='sub'><span class='submarker'>‡</span><span class='subcode'>"+$(this).attr('label') +"</span><span class='subvalue'>"+ convertTags($(this).text()) +"</span></span>\n";
               }
               
             });
      
           } else {
             $(subfields).each(function() {
-              stringRepresentation += "<span class='sub'><span class='submarker'>‡</span><span class='subcode'>"+$(this).attr('label') +"</span><span class='subvalue'>"+ $(this).text() + "</span></span>";
+              stringRepresentation += "<span class='sub'><span class='submarker'>‡</span><span class='subcode'>"+$(this).attr('label') +"</span><span class='subvalue'>"+ convertTags($(this).text()) + "</span></span>";
             });
             
           }
           stringRepresentation += "</span>";
         });
 
+
       return stringRepresentation;
     }
 
     function stringRep(record, options) {
+    /* Note: No tag conversion in this - is it used anywhere?*/
 
         var stringRepresentation = "";
 
@@ -122,6 +124,10 @@ define(function() {
       return stringRepresentation;
     }
 
+    function convertTags(text) {      
+       return text.replace(/&/, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;");
+    }
+
     function sortKey(field) {
       field = (field == 'SID') ? '996' : field;
       field = (field == 'CAT') ? '997' : field;
@@ -157,7 +163,6 @@ define(function() {
 
       $(record).find('[id=STA]').each(function() {
         if ($(this).find('[label=a]').first().text() == "DELETED") {
-    
           status = false;
         }
       });

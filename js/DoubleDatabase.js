@@ -1,5 +1,5 @@
 
-define(['config'], function(config) {
+define(['config','jquery'], function(config,$) {
         
     var currentID;
    
@@ -28,6 +28,8 @@ define(['config'], function(config) {
 
 
   function getDouble() {
+
+            Application.log("---------------------------------------");
             Application.log("Haetaan tuplaehdotusta tietokannasta.");
             
             var url = config.DDB + "?a=getDouble&uid=" + username; 
@@ -43,10 +45,10 @@ define(['config'], function(config) {
                     var src = data.message.rec_id_1;
                     var tgt = data.message.rec_id_2;
                 
-            
                     Application.log("Tuplaehdotus numero " + data.message.id);
                     Application.log("Luotu: " + data.message.created);
                     Application.log("Message: " + data.message.system_message);
+                    Application.log("---------------------------------------");
                     
                     $('.records').find("[name=sourceID]").val(src).trigger('change');
                     $('.records').find("[name=targetID]").val(tgt).trigger('change');
