@@ -2,8 +2,8 @@
 var supportedBrowsers = {
     'Firefox': 17,
     'Chrome': 25
-	//  MSIE commented away because of broken XML
-    //, 'MSIE': 11
+//  MSIE commented away because of broken XML
+//,    'MSIE': 11
 };
 
 
@@ -45,7 +45,7 @@ $(document).ready(function() {
         }
         message += "\n";
         message += "(Tai uudemmilla versioilla näistä selaimista)\n";
-		message += "\n";
+        message += "\n";
         message += "Huom! Internet Exploreria ei toistaiseksi tueta yhteensopivuusongelmien vuoksi. (12.8.2014)\n";
         message += "\n";
         message += "Järjestelmän mukaan selaimesi on: " + browser.agent + " v" + browser.version + "\n";

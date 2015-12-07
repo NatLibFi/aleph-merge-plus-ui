@@ -16,10 +16,7 @@
     } else if (/(firefox\/[0-9]{2})/i.test(navigator.userAgent)) {
         browser.agent = navigator.userAgent.match(/(firefox\/[0-9]{2})/i)[0].split("/")[0];
         browser.version  = parseInt(navigator.userAgent.match(/(firefox\/[0-9]{2})/i)[0].split("/")[1]);
-    } else if (/(MSIE\ [0-9]{2})/i.test(navigator.userAgent)) {
-        browser.agent = navigator.userAgent.match(/(MSIE\ [0-9]{2})/i)[0].split(" ")[0];
-        browser.version  = parseInt(navigator.userAgent.match(/(MSIE\ [0-9]{2})/i)[0].split(" ")[1]);
-	} else if (/(MSIE\ [0-9]{1})/i.test(navigator.userAgent)) {
+    } else if (/(MSIE\ [0-9]{1})/i.test(navigator.userAgent)) {
         browser.agent = navigator.userAgent.match(/(MSIE\ [0-9]{1})/i)[0].split(" ")[0];
         browser.version  = parseInt(navigator.userAgent.match(/(MSIE\ [0-9]{1})/i)[0].split(" ")[1]);
     } else if (/(Opera\/[0-9]{1})/i.test(navigator.userAgent)) {

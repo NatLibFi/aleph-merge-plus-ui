@@ -22,6 +22,7 @@ require([
         }
     };
    
+   
     var storage;
     var sourceRecord;
     var targetRecord;
@@ -79,7 +80,7 @@ require([
         $('#WorkingDialog').dialog({ 
             beforeClose: function(event, ui) {
                 /* Here is the problem - this shouldn't happen after merge-chk */ 
-                    updateRecordsAfterMerge();
+                	updateRecordsAfterMerge();
             }
         });
         WorkingDialog.hide();
@@ -105,7 +106,7 @@ require([
       $('.records').find("[name=sourceID]").change(function(e) {
 
             jQuery.removeData(storage);
-            updateSourceRecord($(this).val(), {updateProposal: true});
+            updateSourceRecord($(this).val());
             messageBus.notifySourceChange();
        
         }).keypress(function(e) {
@@ -122,7 +123,7 @@ require([
         $('.records').find("[name=targetID]").change(function(e) {
         
             jQuery.removeData(storage);
-            updateTargetRecord($(this).val(), {updateProposal: true});
+            updateTargetRecord($(this).val());
             messageBus.notifyTargetChange();
 
         }).keypress(function(e) {
@@ -149,15 +150,11 @@ require([
             if (obj === undefined) {
               return;
             }
-            var updates = [];
-            if (obj.s !== undefined) $('.records').find("[name=sourceID]").val(obj.s);
-            if (obj.t !== undefined) $('.records').find("[name=targetID]").val(obj.t);
-            if (obj.s !== undefined) updates.push( updateSourceRecord(obj.s) );
-            if (obj.t !== undefined) updates.push( updateTargetRecord(obj.t) );
+           if (obj.s !== undefined) $('.records').find("[name=sourceID]").val(obj.s);
+           if (obj.t !== undefined) $('.records').find("[name=targetID]").val(obj.t);
+           if (obj.s !== undefined) updateSourceRecord(obj.s);
+           if (obj.t !== undefined) updateTargetRecord(obj.t);
            
-           if (updates.length > 0) {
-               $.when.apply($, updates).done(updateMergeProposal);
-           }
         });
       
     });
@@ -291,9 +288,6 @@ require([
           return;
         }
 
-        var src = $('.records').find("[name=sourceID]").val();
-        var tgt = $('.records').find("[name=targetID]").val();
-        
         if (mergedRecord === undefined) {
           warn("Errors: cannot merge.");
           return;
@@ -572,30 +566,21 @@ require([
         $("#save").show();
 
     }
-   /**
-     * Renders a record into element pointed by viewSelector (jquery selector)
-     * 
-     */
-    function renderRecord(viewSelector, record) {
-        
-        if ( record === undefined ) {
-            throw new Error("Cannot draw undefined record");
-        }
-        Utils.sortRecord(record);
-        $(viewSelector).html( Utils.htmlRep(record, recordOptions));
-        
-    }
 
-    function redrawMergedRecord( record ) {
-        renderRecord('#merged .data', record);
+    function redrawMergedRecord() {
+        Utils.sortRecord(mergedRecord);
+        var record = $(mergedRecord).find('oai_marc');
+        $('#merged .data').html( Utils.htmlRep(record, recordOptions));
         messageBus.notifyMergeRedraw();
     }
 
     function redrawSourceRecord() {
-        renderRecord('#source .data', sourceRecord);
-        messageBus.notifySourceRedraw(sourceRecord, mergedRecord);      
-    }
 
+        Utils.sortRecord(sourceRecord);     
+        $('#source .data').html( Utils.htmlRep(sourceRecord, recordOptions));
+        messageBus.notifySourceRedraw(sourceRecord, mergedRecord);
+        
+    }
 
     function clearAll() {
         $('.records').find("[name=sourceID]").val('');
@@ -611,35 +596,51 @@ require([
     }
 
     function updateTargetRecord(rec_key, options) {
-       /* var deferred=$.Deferred(); */
-        options = options || {};
+        var deferred=$.Deferred();
         targetRecord=undefined;
         
         $('#target .data').html("");
         
-        return loadRecord( rec_key )
-            .done(function(record) {
-                
-                targetRecord = record;
-                renderRecord('#target .data', targetRecord);
-                
-                log("Loaded target record: " + rec_key);
-                if (options.noValidate !== true) {
-                    Utils.validateRecord(targetRecord);
-                } 
-                if (options.updateProposal === true) {
-                    updateMergeProposal();
-                } 
-            
-            })
-            .fail(textErrorHandler('#target .data'));
+        $.get(config.XAPI + rec_key, function(oai_marcxml_rec) {
         
+          var error = $(oai_marcxml_rec).find('error');
+          
+          if (error.length) {
+        
+            $('#target .data').html(error.text());
+            warn("Failed to load target record: " + rec_key);
+            deferred.reject("Failed to load target record: " + rec_key);
+
+          } else {
+          
+            var record = $(oai_marcxml_rec).find('oai_marc');
+            targetRecord = oai_marcxml_rec;
+            Utils.sortRecord(targetRecord);
+            
+            $('#target .data').html( Utils.htmlRep(record, recordOptions));
+            log("Loaded target record: " + rec_key);
+            deferred.resolve();
+            if (options && options.noValidate) {
+                
+            } else {
+                Utils.validateRecord(targetRecord);
+            }
+          }
+
+          if (options && options.updateProposal === false) {
+          
+          } else {
+              updateMergeProposal();
+          }
+	 
+        });
+        return deferred.promise();        
+
     }
-  
 
     function updateSourceRecord(rec_key, options) {
-        options = options || {};
         
+        var deferred= $.Deferred();
         sourceRecord=undefined;
         
         if (rec_key === undefined || rec_key === null || rec_key === "") {
@@ -647,25 +648,42 @@ require([
         }
         
         $('#source .data').html("");
-
-        return loadRecord( rec_key )
-            .done(function(record) {
-                
-                sourceRecord = record;
-                
-                redrawSourceRecord( sourceRecord );
-                log("Loaded source record: " + rec_key);
-                if (options.noValidate !== true) {
-                    Utils.validateRecord(sourceRecord);
-                } 
-                if (options.updateProposal === true) {
-                    updateMergeProposal();
-                } 
-            
-            })
-            .fail(textErrorHandler('#source .data'));
         
+        $.get(config.XAPI + rec_key, function(oai_marcxml_rec) {
+        
+            var error = $(oai_marcxml_rec).find('error');
+          
+            if (error.length) {
+        
+                $('#source .data').html(error.text());
+                warn("Failed to load source record: " + rec_key);
+                deferred.reject("Failed to load source record: " + rec_key);
+
+            } else {
+          
+                var record = $(oai_marcxml_rec).find('oai_marc'); 
+                sourceRecord = oai_marcxml_rec;
+                
+                redrawSourceRecord();
+
+                log("Loaded source record: " + rec_key);
+                deferred.resolve();    
+
+                if (options && options.noValidate) {
+                    
+                } else {
+                    Utils.validateRecord(sourceRecord);
+                }
+            }
+            if (options && options.updateProposal === false) {
+          
+            } else {
+                updateMergeProposal();
+            }
+        });
+        return deferred.promise();
     }
+
 
     /**
      * Update merged record view with rec_key from database.
@@ -675,7 +693,8 @@ require([
      */
     function updateMergedRecord(rec_key, options) {
      
-        mergedRecord=undefined;
+       var deferred= $.Deferred();   
+       mergedRecord=undefined;
         
         if (rec_key === undefined || rec_key === null || rec_key === "") {
             return;
@@ -683,72 +702,38 @@ require([
         
         $('#merged .data').html("");
         
-       loadRecord( rec_key )
-            .done(function(record) {
-                mergedRecord = record;
-                redrawMergedRecord( mergedRecord );
-                log("Refreshed merged record: " + rec_key);
-                if (options && options.noValidate) {
-                
-                } else {
-                    validateRecord(mergedRecord);
-                }
-            })
-            .fail(textErrorHandler('#merged .data'));
-            
-    }
-
-
-    /**
-     * Returns a function that:
-     *  writes error string into element pointed by selector (jquery)
-     *  and into log
-     * 
-     */
-    function textErrorHandler(selector) {
-
-        return function(errorText) {
-            if (selector !== undefined) {
-                $(selector).html( errorText );
-            }
-       warn(errorText);
-        }
+        $.get(config.XAPI + rec_key, function(oai_marcxml_rec) {
         
-    }
-    
+          var error = $(oai_marcxml_rec).find('error');
+          
+          if (error.length) {
+        
+            $('#merged .data').html( error.text() );
+            warn("Failed to refresh merged record: " + rec_key);
+            deferred.reject("Failed to refresh merged record: " + rec_key);
 
-    /**
-     * 
-     * Loads a record from X-server, returns a promise of said record.
-     * 
-     */
-    function loadRecord(rec_key) {
-        var deferred = $.Deferred();
+          } else {
+          
+            var record = $(oai_marcxml_rec).find('oai_marc'); 
+            mergedRecord = oai_marcxml_rec;
+            
+            redrawMergedRecord();
 
-        $.get(config.XAPI + rec_key, function(oai_marcxml_rec, textStatus, xhr) {
-
-            var error = $(oai_marcxml_rec).find('error');
-            if (error.length) {
-                
-                var errorText = "Failed to load record " + rec_key;
-                errorText += "\n" + error.text();
-                deferred.reject(errorText);
+            log("Refreshed merged record: " + rec_key);
+            deferred.resolve();
+            if (options && options.noValidate) {
                 
             } else {
-              
-                deferred.resolve(oai_marcxml_rec);
+                Utils.validateRecord(mergedRecord);
             }
+            
+          }
+          
         });
-        
         return deferred.promise();
-    }
-    window.loadRecord=loadRecord;
-  
-    /**
-     * Sends source and target records to merge service for merging.
-     * 
-     * 
-     */
+
+   }
+
     function updateMergeProposal() {
         
         $("#save").hide();
@@ -756,7 +741,7 @@ require([
         mergedRecord=undefined;
         $('#merged .data').html("");
 
-        if (sourceRecord === undefined || targetRecord === undefined) {
+	if (sourceRecord === undefined || targetRecord === undefined) {
           // warn("Errors: cannot merge.");
           return;
         }
@@ -764,13 +749,13 @@ require([
         if (!Utils.validateRecord(sourceRecord)) {
           var errorText="Cannot merge: source record is deleted";
           warn(errorText);
-          $('#merged .data').html(errorText);   
+          $('#merged .data').html(errorText);	
           return;
         }
         if (!Utils.validateRecord(targetRecord)) {
           var errorText="Cannot merge: target record is deleted";
           warn(errorText);
-          $('#merged .data').html(errorText);   
+          $('#merged .data').html(errorText);	
           return;
         }
 
@@ -783,7 +768,6 @@ require([
         if (typeof(sourceRecord) != "undefined" &&
           typeof(targetRecord) != "undefined") {
 
-        
         $.ajax({
           'url': config.MERGEAPI, 
           'type': 'POST',
@@ -799,8 +783,7 @@ require([
             }
             mergedRecord = oai_marcxml_rec;
             
-            redrawMergedRecord( mergedRecord );
-           /* redrawMergedRecord(); */
+            redrawMergedRecord();
             
             
             /* Disabled for now, until configuration is possible 
@@ -822,29 +805,39 @@ require([
       }
     }
 
-    /**
-     *  Checks whether given record has child/component records 
-     * 
-     */
-     
     function notHostRecord(rec_key) {
+
+      /* Checks whether given record has child/component records */
        
       var deferred = $.Deferred();
- 
-      $.get(config.XCHILDAPI + rec_key, function(child_query_response) {
-    
+      var expanded_rec_key = pad(rec_key,9);	 
+
+
+      $.get(config.XCHILDAPI + expanded_rec_key, function(child_query_response) {
+	
         var error = $(child_query_response).find('error');
         if (error.text() === "empty set") {
-              log(rec_key + "'s children: " + error.text());
+            //  log(expanded_rec_key + "'s children: " + error.text());
               deferred.resolve();
         }
-    else {
+	else {
               var child_no = $(child_query_response).find('no_records');
               deferred.reject(rec_key + " is host record! ("+child_no.text()+" children)");
         }
     });
     
         return deferred.promise();  
+}
+
+function pad(number, length) {
+   
+    var str = '' + number;
+    while (str.length < length) {
+        str = '0' + str;
+    }
+   
+    return str;
+
 }
 
 

@@ -92,8 +92,7 @@ define([
         $(mergedRecord).find('oai_marc').append(newfield);
 
         
-      /*  Application.redrawMergedRecord(); */
-        Application.redrawMergedRecord( mergedRecord );
+        Application.redrawMergedRecord();
         
         
         var $el = $('#merged .marc_varfield > span.code:contains(000)').parent();
@@ -401,7 +400,7 @@ define([
 
         
         //Redraw
-        Application.redrawMergedRecord( mergedRecord );
+        Application.redrawMergedRecord();
 
     }
 
@@ -411,7 +410,7 @@ define([
             ME.$buttonContainer = null;
         }
         ME.selectedField = null;
-        Application.redrawMergedRecord( mergedRecord );
+        Application.redrawMergedRecord();
 
     }
 
@@ -435,7 +434,7 @@ define([
             
           var record = $(mergedRecord).find('oai_marc');
             
-          Application.redrawMergedRecord( mergedRecord );
+          Application.redrawMergedRecord();
           ME.selectedField = null;
           Application.log("Removed field from merged: " + Utils.varfieldStringRep(varfields[varfieldIndex]));
 
