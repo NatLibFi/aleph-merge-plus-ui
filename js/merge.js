@@ -830,6 +830,7 @@ require([
     function notHostRecord(rec_key) {
        
       var deferred = $.Deferred();
+      var expanded_rec_key = pad(rec_key,9);
  
       $.get(config.XCHILDAPI + rec_key, function(child_query_response) {
     
@@ -845,6 +846,17 @@ require([
     });
     
         return deferred.promise();  
+}
+
+function pad(number, length) {
+   
+    var str = '' + number;
+    while (str.length < length) {
+        str = '0' + str;
+    }
+   
+    return str;
+
 }
 
 
