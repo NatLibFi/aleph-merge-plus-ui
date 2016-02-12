@@ -143,8 +143,8 @@ define(function() {
       if (sortKey(av) > sortKey(bv)) { return 1; }
       if (sortKey(av) < sortKey(bv)) { return -1; }
       
-      if (a.textContent < b.textContent) { return 1; }
-      if (a.textContent > b.textContent) { return -1; }
+      if (a.textContent > b.textContent) { return 1; }
+      if (a.textContent < b.textContent) { return -1; }
       
       return 0;
     }
