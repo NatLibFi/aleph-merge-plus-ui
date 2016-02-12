@@ -2,6 +2,7 @@
 define(['config','jquery'], function(config,$) {
         
     var currentID;
+//    var username;	
    
     $(document).ready(function() {
 
@@ -12,6 +13,8 @@ define(['config','jquery'], function(config,$) {
             currentID=undefined;
         });
     
+ 	username = $("#username").attr('value');
+
         // Enable buttons
         $('#doubleDB').css('display', 'inline');
       
@@ -30,7 +33,7 @@ define(['config','jquery'], function(config,$) {
   function getDouble() {
 
             Application.log("---------------------------------------");
-            Application.log("Haetaan tuplaehdotusta tietokannasta.");
+            Application.log("Haetaan tuplaehdotusta tietokannasta. "+username+"...");
             
             var url = config.DDB + "?a=getDouble&uid=" + username; 
         
