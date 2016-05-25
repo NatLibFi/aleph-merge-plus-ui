@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+	<title><TMPL_VAR NAME="title"></title>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" content="nocache"> 
+	
+	<link rel="stylesheet" type="text/css" media="screen" href="css/linda/jquery-ui-1.7.1.custom.css" />
+
+	<link rel="stylesheet" type="text/css" href="css/merge.css" />
+	<link rel="stylesheet" type="text/css" href="contextMenu/jquery.contextMenu.css" />
+    
+    <script data-main="js/main" src="js/bower_components/requirejs/require.js"></script>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<!--
+	<fieldset id="doubleDB" style="display: none;"><legend>Tuplatietokanta</legend>
+	<button class="ui-state-default ui-corner-all" id="getDoubleButton">Hae tupla</button>
+	<button class="ui-state-default ui-corner-all" id="notDoubleButton">Ei ole tupla</button>
+	<button class="ui-state-default ui-corner-all" id="skipButton">Skip</button>
+
+	<div id="doublecount">Tuplia:</div>
+	</fieldset>
+-->	
+	<div id="main_log" class="log">
+	</div>
+	
+  <fieldset id="actions"><legend>Toiminnot</legend> 
+	<button class="ui-state-default ui-corner-all" id="merge">Tallenna tulos</button>
+<!--
+	<button class="ui-state-default ui-corner-all" id="merge-chk">Tarkista</button>
+-->
+	<button class="ui-state-default ui-corner-all" id="save">Tallenna muutokset</button>
+	<button class="ui-state-default ui-corner-all" id="searchDspace">Hae arkistosta</button>	
+
+	
+  <!--
+   
+  <button class="ui-state-default ui-corner-all" id="own_merge">Yhdistä</button>
+  <button class="ui-state-default ui-corner-all" id="own_dont_merge">Älä yhdistä</button>
+  <input type="text" id="own_message"></input>
+  
+   -->
+
+	</fieldset>
+
+
+
+  <div id="help">
+ 
+<!--
+   Ohjelman käyttöohjeet löytyvät metiva-wikistä: 
+    <a href="https://wiki.helsinki.fi/pages/viewpage.action?pageId=119376091">Ohje</a>
+-->
+
+  <span class="note">Fennican e-tietuetyökalu!</span><br>
+  <br>
+  	
+  Ohjeita ja palautetta: melinda-posti@helsinki.fi.
+
+  </div>
+	
+  <button class="ui-state-default ui-corner-all" id="logout">Kirjaudu ulos</button>
+ 
+	
+	
+</div>
+
+
+<div id="vaihda">
+	<button class="ui-state-default ui-corner-all" id="clearAll">Tyhjennä kaikki</button>
+	<button class="ui-state-default ui-corner-all" id="transpose">Vaihda keskenään</button>
+</div>
+
+<div class="records">
+
+	<div id="source" class="record">
+	<label for="sourceID">ID:</label>
+	<input type="text" name="sourceID" />
+	<div class="header">Lähdetietue</div>
+	<div class="data"></div>
+	</div>
+	
+	<div id="target" class="record">
+	<label for="targetID">ID:</label>
+	<input type="text" name="targetID" />
+	<div class="header">Kohdetietue</div>
+	<div class="data"></div>
+	</div>
+	
+	<div id="merged" class="record">
+	<div class="header">Tulostietueen esikatselu</div>
+	<div class="data"></div>
+	</div>
+
+
+</div>
+
+
+  <div id="storage"></div>
+
+  <div id="WorkingDialog"></div>
+  <div id="username" value="<TMPL_VAR NAME="user">"></div>
+  <div id="password" value="<TMPL_VAR NAME="pass">"></div>
+
+<!-- Context menu for fields -->
+
+<ul id="editmenu" class="contextMenu">
+    <li class="new">
+        <a href="#new">Uusi kenttä</a>
+    </li>
+    
+    <li class="edit">
+        <a href="#edit">Muokkaa</a>
+    </li>
+
+    <li class="delete separator">
+        <a href="#delete">Poista</a>
+    </li>
+    
+</ul>
+
+<ul id="sourceContextMenu" class="contextMenu">
+    <li class="copy">
+        <a href="#add">Lisää</a>
+    </li>
+
+</ul>
+
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+html, body
+{
+	height: 99%;
+}
+
+body
+{
+  background-color: white;
+  color: black;
+  font-family: Arial, sans-serif;
+  font-size: 10pt;
+}
+
+h1
+{
+  font-size: 120%;
+  font-weigth: bold;
+}
+
+.dashboard
+{
+  height: 150px;
+  min-width: 800px;
+  white-space: nowrap;
+}
+
+.records
+{
+  height: 70%;
+	min-width: 850px;
+
+}
+
+.record {
+	float:left;
+	width: 33%;
+  margin-right: 0.5%;
+  height: 100%;
+}
+#merged {
+  margin-right: 0 !important;
+}
+.data, .header
+{
+  width: 100%;
+  border: 1px solid black;
+  height: 5%;
+}
+
+.header
+{
+  height: 20px;
+  font-weight: bold;
+}
+
+.data
+{
+  overflow: scroll;
+  height: 100%;
+  border: 1px solid black;
+  font-family: Fixed, monospace;
+  white-space: pre;
+}
+
+
+.merged_record, .merged_record_hdr
+{
+  clear: right;
+}
+
+.warnings
+{
+  color: red;
+  font-weight: bold;
+  border: 1px solid black;
+  height: 40px;
+  width: 60%;
+  overflow: auto;
+}
+
+.code
+{
+  color: #0000DD;
+}
+
+.ind
+{
+  color: #DD0000;
+}
+
+.subcode, .submarker
+{
+  color: #DD00DD;
+}
+
+.editfield {
+  font-family: Fixed, monospace;
+  font-size: 10pt;
+  width: 300px;
+}
+
+button {
+	padding: 4px;
+}
+
+label, input {
+	font-size: 1.5em;
+}
+
+input:focus {
+	border: 2px solid blue;
+}
+
+#main_log {
+	height: 135px;
+	width: 600px;
+	overflow-y: scroll;
+	display: inline-block;
+	border: 1px solid black;
+	white-space: pre-wrap;
+	padding-left: 4px;
+	margin-top: 7px;
+}
+
+fieldset {
+	display: inline-block;
+	vertical-align: top;
+}
+
+fieldset button {
+	display: block;
+	margin-bottom: 4px;
+}
+
+#vaihda {
+	width: 550px;
+	text-align: center;
+	height: 32px;
+	background-image: url(../images/vaihdabg.gif);
+	margin-left: 60px;
+ 
+    
+}
+
+
+#merged .header {
+	margin-top: 6px; 
+}
+
+
+
+#logout {
+	float: right;
+}
+
+#doubleDB > button {
+  width: 95px;
+}
+
+.subdelete {
+	vertical-align: middle;
+	margin-left: 2px;
+	display: inline;
+	width: 20px;
+	height: 20px;
+}
+
+#help {
+    display: inline-block;
+    height: 135px;
+    width: 200px;
+    vertical-align: top;
+    border: 1px solid black;
+    margin-left: 30px;
+    padding: 10px;
+    white-space: normal;
+}
+            

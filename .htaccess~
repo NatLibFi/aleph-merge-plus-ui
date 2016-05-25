@@ -1,0 +1,5 @@
+Options +ExecCGI +Indexes
+DirectoryIndex index.pl
+AddHandler cgi-script .pl .cgi
+Deny from all
+Allow from 213.243.176.81

@@ -1,0 +1,11 @@
+{
+  "name": "mergeplus",
+  "description": "UI for Merge+, an app for merging MARC records in Aleph ILS",
+  "author": "Pasi Tuominen",
+  "version": "0.0.2",
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-contrib-jshint": "~0.9.2",
+    "grunt-contrib-watch": "~0.6.0"
+  }
+}

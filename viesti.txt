@@ -1,0 +1,2 @@
+Merge+ on Kansalliskirjastossa kehitetty ohjelma Melindan tietueiden yhdistämiseen. Ohjelmassa on taustalla tuplatietokanta, johon on haravoitu tuplaehdotuksia Melindasta. Merge+aa voidaan käyttää myös muiden kuin tuplatietokannassa olevien Melindan tietueiden yhdistämiseen. Merge+lla tietueisiin tehdyt muutokset päivittyvät Melindaan.
+

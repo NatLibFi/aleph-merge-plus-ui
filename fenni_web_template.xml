@@ -1,0 +1,59 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<find-doc>
+<record>
+<metadata>
+<oai_marc>
+<fixfield id="LDR">00000cam^a2200613^i^4500</fixfield>
+<fixfield id="001">000000000</fixfield>
+<fixfield id="007">cr^||^||||||||</fixfield>
+<fixfield id="008">^^^^^^s2016^^^^fi^||||^o^^^^^|0|^0|fin|^</fixfield>
+<varfield id="020" i1=" " i2=" ">
+<subfield label="a"></subfield>
+<subfield label="q">PDF</subfield>
+<subfield label="q">epub</subfield>
+</varfield>
+<varfield id="041" i1="0" i2=" ">
+<subfield label="a">fin</subfield>
+</varfield>
+<varfield id="264" i1=" " i2="1">
+<subfield label="a"> :</subfield>
+<subfield label="b"> ,</subfield>
+<subfield label="c"> .</subfield>
+</varfield>
+<varfield id="300" i1=" " i2=" ">
+<subfield label="a">1 verkkoaineisto (XXX sivua)</subfield>
+</varfield>
+<varfield id="336" i1=" " i2=" ">
+<subfield label="a">teksti</subfield>
+<subfield label="b">txt</subfield>
+<subfield label="2">rdacontent</subfield>
+</varfield>
+<varfield id="337" i1=" " i2=" ">
+<subfield label="a">tietokonekäyttöinen</subfield>
+<subfield label="b">c</subfield>
+<subfield label="2">rdamedia</subfield>
+</varfield>
+<varfield id="338" i1=" " i2=" ">
+<subfield label="a">verkkoaineisto</subfield>
+<subfield label="b">cr</subfield>
+<subfield label="2">rdacarrier</subfield>
+</varfield>
+<varfield id="490" i1="1" i2=" ">
+<subfield label="a"> ,</subfield>
+<subfield label="x"> ;</subfield>
+<subfield label="v"></subfield>
+</varfield>
+<varfield id="588" i1=" " i2=" ">
+<subfield label="a">Nimeke nimiösivulta.</subfield>
+<subfield label="9">FENNI&lt;KEEP&gt;</subfield>
+</varfield>
+<varfield id="830" i1=" " i2="0">
+<subfield label="a"> ,</subfield>
+<subfield label="x"> ;</subfield>
+<subfield label="v"> .</subfield>
+</varfield>
+</oai_marc>
+</metadata>
+</record>
+</find-doc>
+ 

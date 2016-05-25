@@ -1,0 +1,4 @@
+Tama on Merge+:n erikoisversio Fennican E-vapaakappaletietuiden käsittelyyn.
+Työkalu siirtää painetun julkaisun tietueesta (lähdetietue) Fennican kuvailut e-vapaakappaletietueeseen (kohdetietue).
+Lähdetietuetta ei poisteta.
+
