@@ -1,7 +1,18 @@
 {
-  "name": "mergeplus",
+  "name": "aleph-merge-plus-ui",
   "description": "UI for Merge+, an app for merging MARC records in Aleph ILS",
-  "author": "Pasi Tuominen",
+  "author": {
+    "name": "The National Library of Finland"
+  },
+  "homepage": "https://github.com/natlibfi/aleph-merge-plus-ui",
+  "bugs": {
+    "url": "https://github.com/natlibfi/aleph-merge-plus-ui/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:natlibfi/aleph-merge-plus-ui.git"
+  },
+  "license": "AGPL-3.0",
   "version": "0.0.2",
   "devDependencies": {
     "grunt": "~0.4.4",
